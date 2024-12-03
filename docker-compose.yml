@@ -3,13 +3,33 @@ services:
   dev-db:
     image: postgres:13
     ports:
-      - 5434:5432
+      - '${POSTGRES_PORT}:5432'
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin@123
-      POSTGRES_DB: nest_restApi
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
     networks:
-      - freecodecamp # Corrected: Now a list
+      - freecodecamp
+  api:
+    build:
+      context: .
+    ports:
+      - '3000:3000'
+    environment:
+      - POSTGRES_HOST=dev-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    depends_on:
+      - dev-db
+    networks:
+      - freecodecamp
+
+volumes:
+  postgres-data:
 
 networks:
-  freecodecamp: # Network definition
+  freecodecamp:
